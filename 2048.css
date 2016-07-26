@@ -1,13 +1,18 @@
 table{
-    border: 1px solid #ccc;
-    /*border-collapse: collapse;*/
+    border: 2px solid #ccc;
+    border-collapse: collapse;
+    margin: 50px auto;
 }
 
 td{
-    border: 1px solid #ccc;
+    font-family: "Microsoft YaHei", tahoma, arial, 'Hiragino Sans GB', '\5b8b\4f53', sans-serif;
+    border: 5px solid #ffdddd;
     width: 100px;
     height: 100px;
     text-align: center;
     vertical-align: middle;
-    font-size: 30px;
+    font-size: 40px;
+    font-weight: 900;
+    background-color: orange;
+    color: #616161;
 }
