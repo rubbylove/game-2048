@@ -75,11 +75,11 @@ function move_dataArray() {
 
 //生成一个符合移动需要的---左移---二维数组
 function moveLeft_dataArray() {
-    var moveRight_dataArray = move_dataArray();
-    var temp_num1 = moveRight_dataArray.slice(0,4);
-    var temp_num2 = moveRight_dataArray.slice(4,8);
-    var temp_num3 = moveRight_dataArray.slice(8,12);
-    var temp_num4 = moveRight_dataArray.slice(12,16);
+    var moveLight_dataArray = move_dataArray();
+    var temp_num1 = moveLight_dataArray.slice(0,4);
+    var temp_num2 = moveLight_dataArray.slice(4,8);
+    var temp_num3 = moveLight_dataArray.slice(8,12);
+    var temp_num4 = moveLight_dataArray.slice(12,16);
     var tempData_dataArray;
         tempData_dataArray = [temp_num1,temp_num2,temp_num3,temp_num4];
     return tempData_dataArray;
@@ -87,13 +87,9 @@ function moveLeft_dataArray() {
 
 //生成一个符合移动需要的---右移---二维数组
 function moveRight_dataArray() {
-    var moveRight_dataArray = move_dataArray();
-    var temp_num1 = moveRight_dataArray.slice(0,4).reverse();
-    var temp_num2 = moveRight_dataArray.slice(4,8).reverse();
-    var temp_num3 = moveRight_dataArray.slice(8,12).reverse();
-    var temp_num4 = moveRight_dataArray.slice(12,16).reverse();
+    var moveRight = moveLeft_dataArray();
     var tempData_dataArray;
-    tempData_dataArray = [temp_num1,temp_num2,temp_num3,temp_num4];
+    tempData_dataArray = [moveRight[0].reverse(),moveRight[1].reverse(),moveRight[2].reverse(),moveRight[3].reverse()];
     return tempData_dataArray;
 }
 
@@ -117,19 +113,9 @@ function moveTop_dataArray() {
 
 //生成一个符合移动需要的---下移---二维数组
 function moveDown_dataArray() {
-    var moveTop_dataArray = move_dataArray();
-    var temp_num1 = [],temp_num2 = [],temp_num3 = [],temp_num4 = [];
-    for(var i = 0; i < 16; i++) {
-        var t = i % 4;
-        switch (t) {
-            case 0: temp_num1.push(moveTop_dataArray[i]);break;
-            case 1: temp_num2.push(moveTop_dataArray[i]);break;
-            case 2: temp_num3.push(moveTop_dataArray[i]);break;
-            case 3: temp_num4.push(moveTop_dataArray[i]);break;
-        }
-    }
+    var tempdata = moveTop_dataArray();
     var tempData_dataArray;
-    tempData_dataArray = [temp_num1.reverse(),temp_num2.reverse(),temp_num3.reverse(),temp_num4.reverse()];
+    tempData_dataArray = [tempdata[0].reverse(),tempdata[1].reverse(),tempdata[2].reverse(),tempdata[3].reverse()];
     return tempData_dataArray;
 }
 
@@ -150,16 +136,15 @@ function canMoveOrNot(array) {
             }
         }
     }
-    console.log(flag)
 }
 
 //对子数组逐个去除空位，并且将位数不够四位的值赋值0，需要传入参数Array,即move？？？？_dataArray
-function filterEmpty0(Array) {
+function filterEmptyLocationWith0(array) {
     var newArray = [];
-    console.log(Array)
+    console.log(array);
     for(var i = 0; i < 4; i++) {
-        if(Array[i] > 0) {
-            newArray.push(Array[i]);
+        if(array[i] > 0) {
+            newArray.push(array[i]);
         }
     }
     for(var j = 3;j > newArray.length - 1; j-- ) {
@@ -168,9 +153,9 @@ function filterEmpty0(Array) {
     return newArray;
 }
 
-//执行相加操作(有相加条件，即执行相加操作)，需要传入参数Arr，addNums函数会将参数转换为filterEmpty0的形参
-function addNums(Arr) {
-    var Array = filterEmpty0(Arr);
+//执行相加操作(有相加条件，即执行相加操作)，需要传入参数Arr，addNums函数会将参数转换为filterEmptyLocationWith0的形参
+function addNums(array) {
+    var Array = filterEmptyLocationWith0(array);
     var newrow = [];
     var t = 4;
     for(var k = 0; k < t; k++){
@@ -188,14 +173,12 @@ function addNums(Arr) {
             newrow.push(0);
         }
     }
-    console.log(newrow)
     return newrow;
-
 }
 
 //处理数据（二维数组拆分,相加条件存在则执行相加操作,否则不相加，后再逆向赋值给一个新数组）
-function handleData(Arr,single) {
-    var Array = Arr;
+function handleData(moveDirect,single) {
+    var Array = moveDirect;
     var dA1 = Array[0];
     var newAr1 = addNums(dA1);
     var dA2 = Array[1];
@@ -206,36 +189,48 @@ function handleData(Arr,single) {
     var newAr4 = addNums(dA4);
     var newMArrs = [];
     if(single == 39 || single == 40) {
-        console.log("right")
         newMArrs.push(newAr1.reverse());
         newMArrs.push(newAr2.reverse());
         newMArrs.push(newAr3.reverse());
         newMArrs.push(newAr4.reverse());
     } else if(single == 37 || single == 38) {
-        console.log("左移")
         newMArrs.push(newAr1);
         newMArrs.push(newAr2);
         newMArrs.push(newAr3);
         newMArrs.push(newAr4);
     } else {}
+    console.log(newMArrs);
     return newMArrs;
 }
 
-//逆向赋值给各个节点（行）
-function reverseData(direction,single) {
-    var allNodes = handleData(direction,single)
-    //console.log("move_dataArray -- " + allNodes)
-    var oldNodes = getAllNodes();
+//将二维数组还原成一维数组
+function multiArrayToSingleArray(moveDirect,single) {
+    var allNodes = handleData(moveDirect,single);
     var newNodes = [];
     for(var i = 0; i < 4; i++) {
         for(var j = 0; j < 4; j++) {
-            if(allNodes[i][j] > 0) {
-                newNodes.push(allNodes[i][j]);
-            } else {
-                newNodes.push(0);
-            }
+            if(single == 37 || single == 39) {
+                if(allNodes[i][j] > 0) {
+                    newNodes.push(allNodes[i][j]);
+                } else {
+                    newNodes.push(0);
+                }
+            } else if(single == 38 || single == 40) {
+                if(allNodes[i][j] > 0) {
+                    newNodes[i + j*4] = allNodes[i][j];
+                } else {
+                    newNodes[i + j*4] = 0;
+                }
+            } else {}
         }
     }
+    return newNodes;
+}
+
+//渲染各个节点
+function renderData(moveDirect,single) {
+    var newNodes = multiArrayToSingleArray(moveDirect,single);
+    var oldNodes = getAllNodes();
     for(var m = 0; m < 16; m++) {
         if(newNodes[m] > 0) {
             oldNodes[m].innerText = newNodes[m];
@@ -245,44 +240,11 @@ function reverseData(direction,single) {
     }
 }
 
-//逆向赋值给各节点（列）
-function reverseLines(direction,single) {
-    var allNodes = handleData(direction,single)
-    var oldNodes = getAllNodes();
-    var newNodes = [];
-    for(var i = 0; i < 4; i++) {
-        for(var j = 0; j < 4; j++) {
-            if(allNodes[i][j] > 0) {
-                newNodes[i + j*4] = allNodes[i][j];
-            } else {
-                newNodes[i + j*4] = 0;
-            }
-        }
-    }
-    for(var m = 0; m < 16; m++) {
-        if(newNodes[m] > 0) {
-            oldNodes[m].innerText = newNodes[m];
-        } else {
-            oldNodes[m].innerText = "";
-        }
-    }
-}
-
-//移动条件成立，执行移动操作(横向)
-function moveDataToNodes(direction,single) {
-    var temp_ifMove = canMoveOrNot(direction);//能否移动
+//移动条件成立，则执行移动操作
+function moveDatas(moveDirect,single) {
+    var temp_ifMove = canMoveOrNot(moveDirect);//能否移动
     if(temp_ifMove) {
-        reverseData(direction,single);
-        var emptyNodes = getRandomEmptyNode();
-        emptyNodes.innerText = getRandomNum();
-    }
-}
-
-//移动条件成立，执行移动操作(垂直方向)
-function moveLinesToNodes(direction,single) {
-    var temp_ifMove = canMoveOrNot(direction);//能否移动
-    if(temp_ifMove) {
-        reverseLines(direction,single);
+        renderData(moveDirect,single);
         var emptyNodes = getRandomEmptyNode();
         emptyNodes.innerText = getRandomNum();
     }
@@ -292,40 +254,40 @@ function moveLinesToNodes(direction,single) {
 function moveLeft(){
     console.log('moveLeft')
     var single = 37;
-    var direction = moveLeft_dataArray();
-    moveDataToNodes(direction,single);
+    var moveDirect = moveLeft_dataArray();
+    moveDatas(moveDirect,single);
 }
 
 //上移
 function moveUp(){
     console.log('moveUp')
     var single = 38;
-    var direction = moveTop_dataArray();
-    moveLinesToNodes(direction,single);
+    var moveDirect = moveTop_dataArray();
+    moveDatas(moveDirect,single);
 }
 
 //右移
 function moveRight(){
     console.log('moveRight');
     var single = 39;
-    var direction = moveRight_dataArray();
-    moveDataToNodes(direction,single);
+    var moveDirect = moveRight_dataArray();
+    moveDatas(moveDirect,single);
 }
 
 //下移
 function moveDown(){
     console.log('moveDown')
     var single = 40;
-    var direction = moveDown_dataArray();
-    moveLinesToNodes(direction,single);
+    var moveDirect = moveDown_dataArray();
+    moveDatas(moveDirect,single);
 }
 
 //2048程序初始化
 function init(){
     var num1 = getRandomNum()
     var num2 = getRandomNum()
-    var num3 = getRandomNum()
-    var num4 = getRandomNum()
+    //var num3 = getRandomNum()
+    //var num4 = getRandomNum()
 
     var node1 = getRandomEmptyNode()
     node1.innerText = num1
@@ -333,17 +295,15 @@ function init(){
     var node2 = getRandomEmptyNode()
     node2.innerText = num2
 
-    var node3 = getRandomEmptyNode()
-    node3.innerText = num3
-
-    var node4 = getRandomEmptyNode()
-    node4.innerText = num4
+    //var node3 = getRandomEmptyNode()
+    //node3.innerText = num3
+    //
+    //var node4 = getRandomEmptyNode()
+    //node4.innerText = num4
 }
 
-//程序的入口函数
-function main(){
-    init();
-
+//动作监听函数,各个动作函数入口
+function actionLinstener() {
     document.addEventListener('keyup', function(event){
         var keyCode = event.keyCode
 
@@ -358,6 +318,12 @@ function main(){
         }else{
         }
     }, false)
+}
+
+//程序的入口函数
+function main(){
+    init();
+    actionLinstener()
 }
 
 main();
